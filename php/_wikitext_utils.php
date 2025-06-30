@@ -82,7 +82,9 @@ function rc(string $pattern, string $flags = ''): string
 
 $NAME_CAPTURING_HTML_START_TAG_FINDITER = rc(
     str_replace(
-        '{name}', '(?<name>' . _HTML_TAG_NAME() . ')', START_TAG_PATTERN()
+        '{name}',
+        '(?<name>' . _HTML_TAG_NAME() . ')',
+        START_TAG_PATTERN()
     )
 );
 
@@ -108,25 +110,25 @@ $SUB_SECTION = '(?:^(?P=equals)=[^\n]+?(?P=equals)=[ \t]*+$.*?)*';
 $LEAD_SECTION = '(?<section>(?<equals>).*?)';
 $SECTIONS_FULLMATCH = rc(
     $LEAD_SECTION
-    . '(?<section>'
-    . $SECTION_HEADING
-    . '.*?'    // heading  # section content
-    . ')*',
+        . '(?<section>'
+        . $SECTION_HEADING
+        . '.*?'    // heading  # section content
+        . ')*',
     DOTALL . MULTILINE . VERBOSE
 );
 $SECTIONS_TOP_LEVELS_ONLY = rc(
     $LEAD_SECTION
-    . '(?<section>'
-    . $SECTION_HEADING
-    . '.*?'
-    . $SUB_SECTION
-    . ')*',
+        . '(?<section>'
+        . $SECTION_HEADING
+        . '.*?'
+        . $SUB_SECTION
+        . ')*',
     DOTALL . MULTILINE . VERBOSE
 );
 
 // Tables
 $TABLE_FINDITER = rc(
-    """
+    <<<'REGEX'
     # Table-start
     # Always starts on a new line with optional leading spaces or indentation.
     (?<=^[ :\\0]*+)
@@ -138,33 +140,33 @@ $TABLE_FINDITER = rc(
     # Table-end
     \\n\\s*+
     (?> \\|} | \\Z )
-    """,
+    REGEX,
     DOTALL . MULTILINE . VERBOSE
 );
 
 $substitute_apostrophes = rc("('\\0*+){2,}+(?=[^']|$)", MULTILINE);
 
 $BOLD_FINDITER = rc(
-    """
+    <<<'REGEX'
     # start token
     '\\0*+'\\0*+'
     # content
     (\\0*+[^'\\n]++.*?)
     # end token
     (?:'\\0*+'\\0*+'|$)
-""",
+REGEX,
     MULTILINE . VERBOSE
 );
 
 $ITALIC_FINDITER = rc(
-    """
+    <<<'REGEX'
     # start token
     '\\0*+'
     # content
     (\\0*+[^'\\n]++.*?)
     # end token
     (?:'\\0*+'|$)
-""",
+REGEX,
     MULTILINE . VERBOSE
 );
 
@@ -180,9 +182,7 @@ const SPAN_PARSER_TYPES = [
 
 const WS = "\r\n\t ";
 
-class DeadIndexError extends \TypeError
-{
-}
+class DeadIndexError extends \TypeError {}
 
 class DeadIndex extends \_int
 {
@@ -198,7 +198,7 @@ class DeadIndex extends \_int
     {
         throw new DeadIndexError(
             'this usually means that the object has died '
-            . '(overwritten or deleted) and cannot be mutated'
+                . '(overwritten or deleted) and cannot be mutated'
         );
     }
 
@@ -264,7 +264,7 @@ function _table_to_text(Table $t): string
     $widths = array_fill(0, count($data[0]), 0);
     foreach ($data as $row) {
         foreach ($row as $ri => $d) {
-            if ($ri < count($row) -1){ // Exclude the last element as in Python's slice [:-1]
+            if ($ri < count($row) - 1) { // Exclude the last element as in Python's slice [:-1]
                 $widths[$ri] = max($widths[$ri], wcswidth($d));
             }
         }
