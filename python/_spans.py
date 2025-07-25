@@ -25,7 +25,7 @@ VALID_TITLE_CHARS = rb'[^\|\{\}\[\2\]\3<>\n]*+'
 # See also:
 # https://translatewiki.net/wiki/MediaWiki:Sp-translate-data-MagicWords/fa
 ARGS = rb'(?:\|(?>[^{}]++|{(?!{)|}(?!}))*+)?+'
-PF_TL_FINDITER = rc(
+PF_TL_FINDITER = (
     rb'\{\{(?>'
     rb'[\s\0]*+'
     rb'(?>'
@@ -39,14 +39,18 @@ PF_TL_FINDITER = rc(
     rb')?+'
     rb'\}\}()'
     rb'|'  # invalid template name
-    rb'[\s\0_]*+' + ARGS + rb'\}\}()'
+    rb'[\s\0_]*+' + rb'(?:\|(?>[^{}]++|{(?!{)|}(?!}))*+)?+' + rb'\}\}()'
     rb'|'  # template
     rb'[\s\0]*+'
-    + VALID_TITLE_CHARS
+    + rb'[^\|\{\}\[\2\]\3<>\n]*+'
     + rb'[\s\0]*+'  # template name
-    + ARGS
+    + rb'(?:\|(?>[^{}]++|{(?!{)|}(?!}))*+)?+'
     + rb'\}\})'
-).finditer
+)
+
+print(PF_TL_FINDITER)
+
+PF_TL_FINDITER = rc(PF_TL_FINDITER).finditer
 # External links
 INVALID_URL_CHARS = rb' \t\n"<>\[\]'
 VALID_URL_CHARS = rb'[^' + INVALID_URL_CHARS + rb']++'
